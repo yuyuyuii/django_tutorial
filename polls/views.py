@@ -1,8 +1,10 @@
-#httpとtemplateの読み込みをまとめて行ってくれる
-from django.shortcuts import render
+#httpとtemplate, 404の処理をまとめて行ってくれるショートカット
+from django.shortcuts import render, get_object_or_404
 # from django.http import HttpResponse  # http通信を行う
 # from django.template import loader # templateの読み込みを行う
-from .models import Question # Questionモデルをインポート
+# from django.http import Http404 # 404エラー処理
+
+from .models import Question  # Questionモデルをインポート
 
 def index(request):
     latest_question_list = Question.objects.order_by('-pub_date')[:5]
@@ -12,8 +14,18 @@ def index(request):
     return render(request,'polls/index.html', context)
 
 def detail(request, question_id):
-    details = Question.objects.get(pk=question_id)
-    return render(request, 'polls/detail.html', {'details': details })
+  # ショートカット前
+  '''
+  #リクエストしたIDが存在した時
+  try:
+    question = Question.objects.get(pk=question_id)
+  #リクエストしたIDが存在しなかった時
+  except Question.DoesNotExist:
+    raise Http404('Question does not exist')
+  '''
+  # ショートカット後, 上の処理を簡潔に書いたやつ
+  question = get_object_or_404(Question, pk=question_id) # オブジェクトがあればオブジェクト, なければ404を返す
+  return render(request, 'polls/detail.html', {'question': question})
 
 def results(request, question_id):
     response = "you're looking at the results of question %s."
