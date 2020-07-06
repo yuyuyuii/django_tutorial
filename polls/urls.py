@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views  # カレントディレクトリのviews.pyをインポート
 
+app_name = "polls"
 urlpatterns = [
   # /polls/
     path('', views.index, name="index"),  # path('パス名', テンプレート, アクション名(省略可))
